@@ -10,6 +10,10 @@ variable "bucket_name" {
   default     = "rs-devops-terrafrom-state"
 }
 
+variable "github_owner" {
+  type = string
+}
+
 variable "github_repo" {
   type    = string
   default = "rsschool-devops-course-tasks"

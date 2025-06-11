@@ -1,5 +1,8 @@
 name: terraform github actions
-run-name: ${{ github.actor }} is run this action
+permissions:
+  id-token: write
+  contents: read
+run-name: This action was emitted by ${{ github.actor }}
 on:
   push:
   pull_request:
@@ -9,7 +12,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+      - name: Install terraform
+        uses: hashicorp/setup-terraform@v3
       - name: Terraform fmt check
         run: terraform fmt -check
-        continue-on-error: true
+  terraform-plan:
+    needs: terraform-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.0
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT_ID}}:role/GithubActionsRole
+      - name: Terraform init
+        run: terraform init
+      - name: Terraform plan
+        run: terrafrom plan
