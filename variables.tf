@@ -11,7 +11,8 @@ variable "bucket_name" {
 }
 
 variable "github_owner" {
-  type = string
+  type    = string
+  default = "Jimmba"
 }
 
 variable "github_repo" {
