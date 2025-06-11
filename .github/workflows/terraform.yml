@@ -1,0 +1,15 @@
+name: terraform github actions
+run-name: ${{ github.actor }} is run this action
+on:
+  push:
+  pull_request:
+
+jobs:
+  terraform-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - name: Terraform fmt check
+        run: terraform fmt -check
+        continue-on-error: true

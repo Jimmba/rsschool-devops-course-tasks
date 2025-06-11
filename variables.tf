@@ -7,5 +7,10 @@ variable "region" {
 variable "bucket_name" {
   description = "Name of the S3 bucket for storing Terraform state"
   type        = string
-  default = "rs-devops-terrafrom-state"
+  default     = "rs-devops-terrafrom-state"
+}
+
+variable "github_repo" {
+  type    = string
+  default = "rsschool-devops-course-tasks"
 }
