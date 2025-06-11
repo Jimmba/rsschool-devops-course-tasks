@@ -25,15 +25,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.0
-      - name: Dump OIDC token claims
-        id: oidc
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const id_token = await core.getIDToken();
-            const base64Url = id_token.split('.')[1];
-            const decoded = Buffer.from(base64Url, 'base64').toString('utf8');
-            console.log("OIDC Token claims:", decoded);
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
@@ -44,3 +35,22 @@ jobs:
         run: terraform init
       - name: Terraform plan
         run: terraform plan
+  terraform-apply:
+    needs: terraform-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.12.0
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT_ID}}:role/GithubActionsRole
+          audience: sts.amazonaws.com
+      - name: Terraform init
+        run: terraform init
+      - name: Terraform apply
+        run: terraform apply -auto-approve
