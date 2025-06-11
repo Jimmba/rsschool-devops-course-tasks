@@ -6,20 +6,20 @@ terraform {
   }
 }
 
-# resource "aws_s3_bucket" "terraform_state" {
-#   bucket        = var.bucket_name
-#   force_destroy = true
+resource "aws_s3_bucket" "terraform_state" {
+  bucket        = var.bucket_name
+  force_destroy = true
 
 
-#   tags = {
-#     Name = "Terraform State"
-#   }
-# }
+  tags = {
+    Name = "Terraform State"
+  }
+}
 
-# resource "aws_s3_bucket_versioning" "state_versioning" {
-#   bucket = aws_s3_bucket.terraform_state.id
+resource "aws_s3_bucket_versioning" "state_versioning" {
+  bucket = aws_s3_bucket.terraform_state.id
 
-#   versioning_configuration {
-#     status = "Enabled"
-#   }
-# }
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
