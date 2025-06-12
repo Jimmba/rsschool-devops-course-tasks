@@ -11,11 +11,13 @@ variable "bucket_name" {
 }
 
 variable "github_owner" {
-  type    = string
-  default = "Jimmba"
+  description = "Name of user Github user"
+  type        = string
+  default     = "Jimmba"
 }
 
 variable "github_repo" {
-  type    = string
-  default = "rsschool-devops-course-tasks"
+  description = "Name of repository"
+  type        = string
+  default     = "rsschool-devops-course-tasks"
 }
