@@ -25,3 +25,22 @@ output "nat_eip_id" {
 output "nat_gateway_id" {
   value = module.task2-ec2.nat_gateway_id
 }
+
+output "bastion_sg" {
+  value = module.task2-ec2.bastion_sg
+}
+output "private_sg" {
+  value = module.task2-ec2.private_sg
+}
+output "ec2-public-1" {
+  value = module.task2-ec2.ec2-public-1
+}
+output "ec2-public-2" {
+  value = module.task2-ec2.ec2-public-2
+}
+output "ec2-private-1" {
+  value = module.task2-ec2.ec2-private-1
+}
+output "ec2-private-2" {
+  value = module.task2-ec2.ec2-private-2
+}
