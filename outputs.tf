@@ -26,11 +26,11 @@ output "nat_gateway_id" {
   value = module.task2-ec2.nat_gateway_id
 }
 
-output "bastion_sg" {
-  value = module.task2-ec2.bastion_sg
+output "bastion-sg" {
+  value = module.task2-ec2.bastion-sg
 }
-output "private_sg" {
-  value = module.task2-ec2.private_sg
+output "private-sg" {
+  value = module.task2-ec2.private-sg
 }
 output "ec2-public-1" {
   value = module.task2-ec2.ec2-public-1

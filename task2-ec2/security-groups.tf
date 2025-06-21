@@ -1,6 +1,6 @@
-resource "aws_security_group" "bastion_sg" {
+resource "aws_security_group" "bastion-sg" {
   name = "bastion-sg"
-  description = "allow SSH access to bastion host"
+  description = "Allow SSH access to bastion host"
   vpc_id = aws_vpc.main.id
   
   tags = {
@@ -24,8 +24,8 @@ resource "aws_security_group" "bastion_sg" {
   }
 }
 
-resource "aws_security_group" "private_sg" {
-  name        = "private_sg"
+resource "aws_security_group" "private-sg" {
+  name        = "private-sg"
   description = "Allow SSH from bastion only"
   vpc_id      = aws_vpc.main.id
 

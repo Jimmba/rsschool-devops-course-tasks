@@ -60,23 +60,23 @@ output "nat_gateway_id" {
   }
 }
 
-output "bastion_sg" {
+output "bastion-sg" {
   value = {
-    id          = aws_security_group.bastion_sg.id
-    name        = aws_security_group.bastion_sg.tags["Name"]
-    description = aws_security_group.bastion_sg.description
-    ingress     = aws_security_group.bastion_sg.ingress
-    egress      = aws_security_group.bastion_sg.egress
+    id          = aws_security_group.bastion-sg.id
+    name        = aws_security_group.bastion-sg.tags["Name"]
+    description = aws_security_group.bastion-sg.description
+    ingress     = aws_security_group.bastion-sg.ingress
+    egress      = aws_security_group.bastion-sg.egress
   }
 }
 
-output "private_sg" {
+output "private-sg" {
   value = {
-    id          = aws_security_group.private_sg.id
-    name        = aws_security_group.private_sg.tags["Name"]
-    description = aws_security_group.private_sg.description
-    ingress     = aws_security_group.private_sg.ingress
-    egress      = aws_security_group.private_sg.egress
+    id          = aws_security_group.private-sg.id
+    name        = aws_security_group.private-sg.tags["Name"]
+    description = aws_security_group.private-sg.description
+    ingress     = aws_security_group.private-sg.ingress
+    egress      = aws_security_group.private-sg.egress
   }
 }
 
