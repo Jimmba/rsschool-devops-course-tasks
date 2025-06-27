@@ -28,3 +28,15 @@ output "bastion-sg" {
 output "private-sg" {
   value = module.task2-ec2.private-sg
 }
+# output "ec2-public-1" {
+#   value = module.task2-ec2.ec2-public-1
+# }
+# output "ec2-public-2" {
+#   value = module.task2-ec2.ec2-public-2
+# }
+# output "ec2-private-1" {
+#   value = module.task2-ec2.ec2-private-1
+# }
+# output "ec2-private-2" {
+#   value = module.task2-ec2.ec2-private-2
+# }
