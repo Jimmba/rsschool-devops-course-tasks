@@ -4,7 +4,7 @@ resource "tls_private_key" "bastion_key" {
 }
 
 resource "aws_key_pair" "bastion_key" {
-  key_name   = "bastion-key"
+  key_name   = "bastion"
   public_key = tls_private_key.bastion_key.public_key_openssh
 }
 
@@ -20,6 +20,6 @@ resource "tls_private_key" "k3s-key" {
 }
 
 resource "aws_key_pair" "k3s-key" {
-  key_name   = "k3s-key"
+  key_name   = "k3s"
   public_key = tls_private_key.k3s-key.public_key_openssh
 }
