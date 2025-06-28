@@ -9,10 +9,10 @@ module "task2-ec2" {
 }
 
 module "task3-k3s" {
-  source = "./task3-k3s"
-  region = var.region
-  public_subnets = module.task2-ec2.public_subnets
+  source          = "./task3-k3s"
+  region          = var.region
+  public_subnets  = module.task2-ec2.public_subnets
   private_subnets = module.task2-ec2.private_subnets
-  bastion-sg = module.task2-ec2.bastion-sg
-  private-sg = module.task2-ec2.private-sg
+  bastion-sg      = module.task2-ec2.bastion-sg
+  private-sg      = module.task2-ec2.private-sg
 }
