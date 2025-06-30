@@ -14,12 +14,12 @@ resource "local_file" "bastion_private_key" {
   file_permission = "0600"
 }
 
-resource "tls_private_key" "k3s-key" {
+resource "tls_private_key" "k3s_key" {
   algorithm = "RSA"
   rsa_bits  = 2048
 }
 
-resource "aws_key_pair" "k3s-key" {
+resource "aws_key_pair" "k3s_key" {
   key_name   = "k3s"
-  public_key = tls_private_key.k3s-key.public_key_openssh
+  public_key = tls_private_key.k3s_key.public_key_openssh
 }

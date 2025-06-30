@@ -1,6 +1,5 @@
-
 resource "null_resource" "wait_for_bastion_ssh" {
-  depends_on = [aws_instance.bastion]
+  depends_on = [var.bastion]
 
   provisioner "remote-exec" {
     inline = [
@@ -11,28 +10,28 @@ resource "null_resource" "wait_for_bastion_ssh" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      host        = aws_instance.bastion.public_ip
-      private_key = tls_private_key.bastion_key.private_key_pem
+      host        = var.bastion.public_ip
+      private_key = var.bastion_key.private_key_pem
       timeout     = "5m"
     }
   }
 
   triggers = {
-    instance_id = aws_instance.bastion.id
+    instance_id = var.bastion.id
   }
 }
 
 resource "null_resource" "install_k3s_key_on_bastion" {
   depends_on = [null_resource.wait_for_bastion_ssh]
   provisioner "file" {
-    content     = tls_private_key.k3s-key.private_key_pem
+    content     = var.k3s_key.private_key_pem
     destination = "/home/ubuntu/k3s.pem"
 
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      host        = aws_instance.bastion.public_ip
-      private_key = tls_private_key.bastion_key.private_key_pem
+      host        = var.bastion.public_ip
+      private_key = var.bastion_key.private_key_pem
     }
   }
 
@@ -44,18 +43,18 @@ resource "null_resource" "install_k3s_key_on_bastion" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      host        = aws_instance.bastion.public_ip
-      private_key = tls_private_key.bastion_key.private_key_pem
+      host        = var.bastion.public_ip
+      private_key = var.bastion_key.private_key_pem
     }
   }
 
   triggers = {
-    instance_id = aws_instance.bastion.id
+    instance_id = var.bastion.id
   }
 }
 
 resource "null_resource" "wait_for_private_1_ssh" {
-  depends_on = [null_resource.install_k3s_key_on_bastion, aws_instance.private_1]
+  depends_on = [null_resource.install_k3s_key_on_bastion, var.private_1]
 
   provisioner "remote-exec" {
     inline = [
@@ -66,22 +65,22 @@ resource "null_resource" "wait_for_private_1_ssh" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      host        = aws_instance.private_1.private_ip
-      private_key = tls_private_key.k3s-key.private_key_pem
-      bastion_host = aws_instance.bastion.public_ip
+      host        = var.private_1.private_ip
+      private_key = var.k3s_key.private_key_pem
+      bastion_host = var.bastion.public_ip
       bastion_user = "ubuntu"
-      bastion_private_key = tls_private_key.bastion_key.private_key_pem
+      bastion_private_key = var.bastion_key.private_key_pem
       timeout     = "5m"
     }
   }
 
   triggers = {
-    instance_id = aws_instance.private_1.id
+    instance_id = var.private_1.id
   }
 }
 
 resource "null_resource" "wait_for_private_2_ssh" {
-  depends_on = [null_resource.install_k3s_key_on_bastion, aws_instance.private_2]
+  depends_on = [null_resource.install_k3s_key_on_bastion, var.private_2]
 
   provisioner "remote-exec" {
     inline = [
@@ -92,16 +91,16 @@ resource "null_resource" "wait_for_private_2_ssh" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      host        = aws_instance.private_2.private_ip
-      private_key = tls_private_key.k3s-key.private_key_pem
-      bastion_host = aws_instance.bastion.public_ip
+      host        = var.private_2.private_ip
+      private_key = var.k3s_key.private_key_pem
+      bastion_host = var.bastion.public_ip
       bastion_user = "ubuntu"
-      bastion_private_key = tls_private_key.bastion_key.private_key_pem
+      bastion_private_key = var.bastion_key.private_key_pem
       timeout     = "5m"
     }
   }
 
   triggers = {
-    instance_id = aws_instance.private_2.id
+    instance_id = var.private_2.id
   }
 }
