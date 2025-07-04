@@ -18,9 +18,10 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "bastion" {
   ami                           = data.aws_ami.ubuntu.id
   instance_type                 = var.instance_type
-  subnet_id                     = var.public_subnets[0].id
-  vpc_security_group_ids        = [var.bastion-sg.id, var.private-sg.id]
+  subnet_id                     = aws_subnet.public_1.id
+  vpc_security_group_ids        = [aws_security_group.bastion-sg.id, aws_security_group.private-sg.id]
   associate_public_ip_address   = true
+  source_dest_check = false
   key_name                      = aws_key_pair.bastion_key.key_name
 
   tags = {
@@ -32,9 +33,9 @@ resource "aws_instance" "bastion" {
 resource "aws_instance" "private_1" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  subnet_id              = var.private_subnets[0].id
-  vpc_security_group_ids = [var.private-sg.id]
-  key_name               = aws_key_pair.k3s-key.key_name
+  subnet_id              = aws_subnet.private_1.id
+  vpc_security_group_ids = [aws_security_group.private-sg.id]
+  key_name               = aws_key_pair.k3s_key.key_name
 
   tags = {
     Name = "devops-${terraform.workspace}-ec2-private-1"
@@ -45,9 +46,9 @@ resource "aws_instance" "private_1" {
 resource "aws_instance" "private_2" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  subnet_id              = var.private_subnets[1].id
-  vpc_security_group_ids = [var.private-sg.id]
-  key_name               = aws_key_pair.k3s-key.key_name
+  subnet_id              = aws_subnet.private_2.id
+  vpc_security_group_ids = [aws_security_group.private-sg.id]
+  key_name               = aws_key_pair.k3s_key.key_name
 
   tags = {
     Name = "devops-${terraform.workspace}-ec2-private-2"
