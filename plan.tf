@@ -9,20 +9,20 @@ module "task2-ec2" {
 }
 
 module "task3-k3s" {
-  source          = "./task3-k3s"
-  bastion_key     = module.task2-ec2.bastion_key
-  k3s_key         = module.task2-ec2.k3s_key
-  bastion         = module.task2-ec2.bastion
-  private_1       = module.task2-ec2.private_1
-  private_2       = module.task2-ec2.private_2
+  source      = "./task3-k3s"
+  bastion_key = module.task2-ec2.bastion_key
+  k3s_key     = module.task2-ec2.k3s_key
+  bastion     = module.task2-ec2.bastion
+  private_1   = module.task2-ec2.private_1
+  private_2   = module.task2-ec2.private_2
 }
 
 module "task4-jenkins" {
-  source = "./task4-jenkins"
-  install_worker_on_private_2_id  = module.task3-k3s.install_worker_on_private_2_id
-  bastion_key                     = module.task2-ec2.bastion_key
-  k3s_key                         = module.task2-ec2.k3s_key
-  bastion                         = module.task2-ec2.bastion
-  private_1                       = module.task2-ec2.private_1
-  private_2                       = module.task2-ec2.private_2
+  source                         = "./task4-jenkins"
+  install_worker_on_private_2_id = module.task3-k3s.install_worker_on_private_2_id
+  bastion_key                    = module.task2-ec2.bastion_key
+  k3s_key                        = module.task2-ec2.k3s_key
+  bastion                        = module.task2-ec2.bastion
+  private_1                      = module.task2-ec2.private_1
+  private_2                      = module.task2-ec2.private_2
 }
