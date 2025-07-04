@@ -1,0 +1,40 @@
+service:
+  type: NodePort
+  port: 30000
+  nodePort: 32000
+controller:
+  serviceType: NodePort
+  numExecutors: 1
+  persistence:
+    enabled: true
+    existingClaim: jenkins-pvc
+  installPlugins:
+    - kubernetes:4358.vcfd9c5a_0a_f51
+    - workflow-aggregator:608.v67378e9d3db_1
+    - git:5.7.0
+    - configuration-as-code:1971.vf9280461ea_89
+    - job-dsl
+    - configuration-as-code
+  JCasC:
+    defaultConfigMount: true
+    configScripts:
+      simple-job: |
+        jobs:
+          - script: >
+              job('hello-world-job') {
+                description('This is a test job')
+                steps {
+                  shell('echo Hello world')
+                }
+              }
+      security: |
+        jenkins:
+          securityRealm:
+            local:
+              allowsSignup: false
+              users:
+                - id: "admin"
+                  password: "admin_password"
+          authorizationStrategy:
+            loggedInUsersCanDoAnything:
+              allowAnonymousRead: false
