@@ -166,6 +166,5 @@ resource "null_resource" "install_jenkins" {
   triggers = {
     private_1_id = var.private_1.id
     private_2_id = var.private_2.id
-    timestamp = timestamp()
   }
 }
