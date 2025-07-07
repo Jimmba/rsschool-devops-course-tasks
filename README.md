@@ -49,9 +49,15 @@ After `terraform apply` jenkins deploys on `private-1` ec2 instance. To get acce
 1. Run `ssh -i keys/bastion.pem -L 8080:localhost:8080 ubuntu@<BASTION_PUBLIC_IP>` to open the tunnel to the bastion
 2. Run `ssh -i keys/k3s.pem -L 8080:localhost:8080 ubuntu@<K3S_SERVER_IP>` to open the tunnel from the bastion to the jenkins
 3. Use `http://localhost:8080` to open Jenkins web-page
-4. Use credentials (set in values.yaml):
-   user: admin;
-   password: admin_password
+4. Get admin password using the command:
+
+```
+jsonpath="{.data.jenkins-admin-password}"
+secret=$(kubectl get secret -n jenkins jenkins -o jsonpath=$jsonpath)
+echo $(echo $secret | base64 --decode)
+```
+
+5. Use username `admin` and password you got on the previous step.
 
 ### Jenkins using Minikube
 
@@ -86,6 +92,12 @@ kubectl port-forward svc/jenkins -n jenkins 8080:8080
 ```
 
 8. Use `http://localhost:8080` to open Jenkins web-page
-9. Use credentials (set in values.yaml):
-   user: admin;
-   password: admin_password
+9. Get admin password using the command:
+
+```
+jsonpath="{.data.jenkins-admin-password}"
+secret=$(kubectl get secret -n jenkins jenkins -o jsonpath=$jsonpath)
+echo $(echo $secret | base64 --decode)
+```
+
+10. Use username `admin` and password you got on the previous step.
