@@ -104,7 +104,7 @@ resource "null_resource" "upload_jenkins_values" {
   }
 }
 
-resource "null_resource" "install_jenkins" {
+resource "null_resource" "install_helm" {
   depends_on = [null_resource.upload_jenkins_pv, null_resource.upload_jenkins_pvc, null_resource.upload_jenkins_values]
 
   provisioner "remote-exec" {
@@ -116,7 +116,30 @@ resource "null_resource" "install_jenkins" {
 
       "sudo helm repo add jenkinsci https://charts.jenkins.io",
       "sudo helm repo update",
+    ]
 
+    connection {
+      type                = "ssh"
+      user                = "ubuntu"
+      host                = var.private_1.private_ip
+      private_key         = var.k3s_key.private_key_pem
+      bastion_host        = var.bastion.public_ip
+      bastion_user        = "ubuntu"
+      bastion_private_key = var.bastion_key.private_key_pem
+    }
+  }
+
+  triggers = {
+    private_1_id = var.private_1.id
+    private_2_id = var.private_2.id
+  }
+}
+
+resource "null_resource" "install_jenkins" {
+  depends_on = [null_resource.install_helm]
+
+  provisioner "remote-exec" {
+    inline = [
       "echo 'Create namespace...'",
       "sudo kubectl create namespace jenkins || true",
       "until sudo kubectl get ns jenkins; do echo 'Waiting for namespace...'; sleep 2; done",
