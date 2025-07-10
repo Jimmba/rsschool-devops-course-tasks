@@ -47,7 +47,7 @@ There are two methods to run Jenkins:
 After `terraform apply` jenkins deploys on `private-1` ec2 instance. To get access to it you should use port-forwardings:
 
 1. Run `ssh -i keys/bastion.pem -L 8080:localhost:8080 ubuntu@<BASTION_PUBLIC_IP>` to open the tunnel to the bastion
-2. Run `ssh -i keys/k3s.pem -L 8080:localhost:8080 ubuntu@<K3S_SERVER_IP>` to open the tunnel from the bastion to the jenkins
+2. Run `ssh -i k3s.pem -L 8080:localhost:8080 ubuntu@<K3S_SERVER_IP>` to open the tunnel from the bastion to the jenkins
 3. Use `http://localhost:8080` to open Jenkins web-page
 4. Use credentials (set in values.yaml):
    user: admin;
