@@ -69,14 +69,14 @@ helm repo update
 
 ```bash
 kubectl create namespace jenkins
-kubectl apply -f pv.yaml
-kubectl apply -f pvc.yaml
+kubectl apply -f task4-jenkins/pv.yaml
+kubectl apply -f task4-jenkins/pvc.yaml
 ```
 
 6. Install Jenkins:
 
 ```bash
-helm install jenkins jenkinsci/jenkins -n jenkins -f values.yaml
+helm install jenkins jenkinsci/jenkins -n jenkins -f task4-jenkins/values.yaml
 ```
 
 [Jenkins](https://www.jenkins.io/doc/book/installing/kubernetes/#install-jenkins-with-helm-v3)
