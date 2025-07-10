@@ -1,29 +1,5 @@
-# resource "null_resource" "create_flask_app_chart_folder" {
-#   depends_on = [var.install_jenkins_id]
-#   provisioner "remote-exec" {
-#     inline = [
-#       "mkdir -p /home/ubuntu/flask-app-chart",
-#     ]
-
-#     connection {
-#       type                = "ssh"
-#       user                = "ubuntu"
-#       host                = var.private_1.private_ip
-#       private_key         = var.k3s_key.private_key_pem
-#       bastion_host        = var.bastion.public_ip
-#       bastion_user        = "ubuntu"
-#       bastion_private_key = var.bastion_key.private_key_pem
-#     }
-#   }
-
-#   triggers = {
-#     private_1_id = var.private_1.id
-#     private_2_id = var.private_2.id
-#   }
-# }
-
 resource "null_resource" "copy_chart_files" {
-  depends_on = [var.install_jenkins_id]
+  depends_on = [var.install_helm_id]
   provisioner "file" {
     source      = "./task5-application/flask-app-chart"
     destination = "/home/ubuntu/"

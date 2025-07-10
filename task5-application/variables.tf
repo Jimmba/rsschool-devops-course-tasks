@@ -1,4 +1,4 @@
-variable "install_jenkins_id" {
+variable "install_helm_id" {
   type = string
 }
 

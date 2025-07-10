@@ -92,6 +92,22 @@ kubectl port-forward svc/jenkins -n jenkins 8080:8080
 
 ## Simple application deployment with Helm
 
+There are two methods to run Jenkins:
+
+1. In AWS cloud
+2. Locally using `minikube`
+
+### Application in AWS
+
+After `terraform apply` applications deploys on `private-1` ec2 instance. To get access to it you should use port-forwardings:
+
+1. Run `ssh -i keys/bastion.pem -L 8081:localhost:8081 ubuntu@<BASTION_PUBLIC_IP>` to open the tunnel to the bastion
+2. Run `ssh -i k3s.pem -L 8081:localhost:8081 ubuntu@<K3S_SERVER_IP>` to open the tunnel from the bastion to the application
+3. Use `http://localhost:8081` to open application web-page
+   (if you want to use another port you should update chart congiguration)
+
+### Install application using Minikube
+
 1. Install Minikube and Jenkins (see instructions above)
 2. Install application:
 
