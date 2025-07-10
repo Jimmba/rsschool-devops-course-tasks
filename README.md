@@ -89,3 +89,20 @@ kubectl port-forward svc/jenkins -n jenkins 8080:8080
 9. Use credentials (set in values.yaml):
    user: admin;
    password: admin_password
+
+## Simple application deployment with Helm
+
+1. Install Minikube and Jenkins (see instructions above)
+2. Install application:
+
+```
+helm install flask-app ./task5-application/flask-app-chart -n flask-app --create-namespace
+```
+
+3. Forward port to your local machine. Make sure that port is not busy or select another port:
+
+```
+kubectl port-forward svc/flask-app-flask-app-chart -n flask-app 8081:8080
+```
+
+4. Your application is available at the address `http://127.0.0.1:8081` (change port if you need)
