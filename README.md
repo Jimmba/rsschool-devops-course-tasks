@@ -23,7 +23,7 @@ Config to connect to the cluster from your local PC and key to internal resource
 instance `private_1` is k3s server (control plane)
 instance `private_2` is k3s node (worker)
 
-## How to use infrastructure:
+### How to use infrastructure:
 
 1. To connect to the bastion use command:
    `ssh -i keys/bastion.pem ubuntu@<BASTION_PUBLIC_IP>`
@@ -34,3 +34,58 @@ instance `private_2` is k3s node (worker)
 - [install kubectl](https://kubernetes.io/docs/tasks/tools/)
 - download config using command `scp -i keys/bastion.pem ubuntu@<BASTION_PUBLIC_IP>:/home/ubuntu/config ./config`.
 - open the tunnel `ssh -i keys/bastion.pem -L 6443:<K3S_SERVER_IP>:6443 ubuntu@<BASTION_PUBLIC_IP>`
+
+## Jenkins
+
+There are two methods to run Jenkins:
+
+1. In AWS cloud
+2. Locally using `minikube`
+
+### Jenkins in AWS
+
+After `terraform apply` jenkins deploys on `private-1` ec2 instance. To get access to it you should use port-forwardings:
+
+1. Run `ssh -i keys/bastion.pem -L 8080:localhost:8080 ubuntu@<BASTION_PUBLIC_IP>` to open the tunnel to the bastion
+2. Run `ssh -i k3s.pem -L 8080:localhost:8080 ubuntu@<K3S_SERVER_IP>` to open the tunnel from the bastion to the jenkins
+3. Use `http://localhost:8080` to open Jenkins web-page
+4. Use credentials (set in values.yaml):
+   user: admin;
+   password: admin_password
+
+### Jenkins using Minikube
+
+1. Install [Helm](https://helm.sh/docs/intro/install/)
+2. Install [Minikube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
+3. Start cluster `minikube start`.
+4. Add Jenkins to Helm repo
+
+```bash
+helm repo add jenkinsci https://charts.jenkins.io
+helm repo update
+```
+
+5. Create namespace and apply PV and PVC:
+
+```bash
+kubectl create namespace jenkins
+kubectl apply -f task4-jenkins/pv.yaml
+kubectl apply -f task4-jenkins/pvc.yaml
+```
+
+6. Install Jenkins:
+
+```bash
+helm install jenkins jenkinsci/jenkins -n jenkins -f task4-jenkins/values.yaml
+```
+
+[Jenkins](https://www.jenkins.io/doc/book/installing/kubernetes/#install-jenkins-with-helm-v3)
+
+```
+kubectl port-forward svc/jenkins -n jenkins 8080:8080
+```
+
+8. Use `http://localhost:8080` to open Jenkins web-page
+9. Use credentials (set in values.yaml):
+   user: admin;
+   password: admin_password
