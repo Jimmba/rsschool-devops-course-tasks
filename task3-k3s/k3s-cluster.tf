@@ -1,11 +1,15 @@
 
+resource "random_password" "k3s_token" {
+  length  = 48
+  special = false
+}
 
 resource "null_resource" "install_k3s_server_on_private_1" {
   depends_on = [ null_resource.wait_for_private_1_ssh ]
 
   provisioner "remote-exec" {
     inline = [      
-      "curl -sfL https://get.k3s.io | sh -",
+      "curl -sfL https://get.k3s.io | K3S_TOKEN=${random_password.k3s_token.result} sh -",
       "echo `Waiting for K3s to be ready...`",
       "until sudo /usr/local/bin/k3s kubectl get nodes &>/dev/null; do sleep 5; done",
     ]
@@ -101,31 +105,12 @@ resource "null_resource" "install_kubectl_on_bastion" {
   }
 }
 
-
-resource "null_resource" "download_token" {
-  depends_on = [ null_resource.install_k3s_server_on_private_1 ]
-  provisioner "local-exec" {
-    command = <<EOT
-      ssh -o StrictHostKeyChecking=no -i keys/bastion.pem -A ubuntu@${var.bastion.public_ip} 'ssh -o StrictHostKeyChecking=no -i k3s.pem ubuntu@${var.private_1.private_ip} sudo cat /var/lib/rancher/k3s/server/node-token' > keys/k3s_token.txt
-      EOT
-  }
-
-  triggers = {
-    instance_id = var.private_1.id
-  }
-}
-
-data "local_file" "k3s_token" {
-  depends_on = [null_resource.download_token]
-  filename   = "./keys/k3s_token.txt"
-}
-
 resource "null_resource" "install_worker_on_private_2" {
-  depends_on = [ null_resource.wait_for_private_2_ssh, data.local_file.k3s_token ]
+  depends_on = [ null_resource.wait_for_private_2_ssh ]
 
   provisioner "remote-exec" {
     inline = [
-      "curl -sfL https://get.k3s.io | K3S_URL=https://${var.private_1.private_ip}:6443 K3S_TOKEN=${trimspace(data.local_file.k3s_token.content)} sh -"
+      "curl -sfL https://get.k3s.io | K3S_URL=https://${var.private_1.private_ip}:6443 K3S_TOKEN=${random_password.k3s_token.result} sh -"
     ]
 
     connection {
