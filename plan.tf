@@ -26,3 +26,13 @@ module "task4-jenkins" {
   private_1                      = module.task2-ec2.private_1
   private_2                      = module.task2-ec2.private_2
 }
+
+module "task5-application" {
+  source          = "./task5-application"
+  bastion_key     = module.task2-ec2.bastion_key
+  k3s_key         = module.task2-ec2.k3s_key
+  bastion         = module.task2-ec2.bastion
+  private_1       = module.task2-ec2.private_1
+  install_helm_id = module.task4-jenkins.install_helm_id
+  private_2       = module.task2-ec2.private_2
+}
