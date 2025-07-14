@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'docker.io/jimmba/flask-app'
+        DOCKER_IMAGE = 'jimmba/flask-app'
         IMAGE_TAG = 'latest'
+        APP_PATH = './task5-application/app'
         CHART_PATH = './task5-application/flask-app-chart' //! check path
     }
 
@@ -17,7 +18,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t $DOCKER_IMAGE:$IMAGE_TAG ."
+                    sh "docker build -t $DOCKER_IMAGE:$IMAGE_TAG $APP_PATH"
                 }
             }
         }
