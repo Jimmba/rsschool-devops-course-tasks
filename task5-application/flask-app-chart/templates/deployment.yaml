@@ -13,10 +13,11 @@ spec:
       {{- include "flask-app-chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        checksum/image: "{{ .Values.image.tag }}"
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 4 }}
+        {{- end }}
       labels:
         {{- include "flask-app-chart.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
