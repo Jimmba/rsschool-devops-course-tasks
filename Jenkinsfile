@@ -52,6 +52,17 @@ spec:
       }
     }
 
+    stage('Run Unit Tests') {
+      steps {
+        container('tools') {
+          sh """
+            pip install -r $APP_PATH/requirements.txt
+            pytest $APP_PATH
+          """
+        }
+      }
+    }
+
     stage('Push Docker Image') {
       steps {
         container('tools') {
