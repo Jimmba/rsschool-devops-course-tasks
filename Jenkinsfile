@@ -34,7 +34,9 @@ spec:
     DOCKER_IMAGE = 'jimmba/flask-app'
     IMAGE_TAG = 'latest'
     APP_PATH = './task5-application/app'
-    CHART_PATH = './task5-application/flask-app-chart'  // проверь путь
+    CHART_PATH = './task5-application/flask-app-chart'
+    SONAR_PROJECT_KEY = 'Jimmba_rsschool-devops-course-tasks'
+    SONAR_ORGANIZATION = 'jimmba'
   }
 
   stages {
@@ -59,6 +61,25 @@ spec:
             pip install -r $APP_PATH/requirements.txt
             pytest $APP_PATH
           """
+        }
+      }
+    }
+
+    stage('SonarCloud Analysis') {
+      steps {
+        container('tools') {
+          withCredentials([
+            string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN'),
+          ]) {
+            sh """
+              sonar-scanner \
+                -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
+                -Dsonar.organization=${env.SONAR_ORGANIZATION} \
+                -Dsonar.sources=$APP_PATH \
+                -Dsonar.login=$SONAR_TOKEN \
+                -Dsonar.host.url=https://sonarcloud.io
+            """
+          }
         }
       }
     }
