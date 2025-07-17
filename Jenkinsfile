@@ -46,14 +46,6 @@ spec:
       }
     }
 
-    stage('Build Docker Image') {
-      steps {
-        container('tools') {
-          sh "docker build -t $DOCKER_IMAGE:$IMAGE_TAG $APP_PATH"
-        }
-      }
-    }
-
     stage('Run Unit Tests') {
       steps {
         container('tools') {
@@ -80,6 +72,14 @@ spec:
                 -Dsonar.host.url=https://sonarcloud.io
             """
           }
+        }
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        container('tools') {
+          sh "docker build -t $DOCKER_IMAGE:$IMAGE_TAG $APP_PATH"
         }
       }
     }
