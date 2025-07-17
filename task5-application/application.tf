@@ -40,14 +40,14 @@ resource "null_resource" "install_flask_application" {
 
       "echo 'Trying to forward port...'",
       "while true; do",
-      "  nohup sudo kubectl port-forward svc/flask-app-flask-app-chart -n flask-app 8081:8080 > /dev/null 2>&1 &",
+      "  nohup sudo kubectl port-forward svc/flask-app -n flask-app 8081:8080 > /dev/null 2>&1 &",
       "  sleep 5",
       "  if ss -tln | grep -q ':8081'; then",
       "    echo 'Port-forward is running'",
       "    break",
       "  else",
       "    echo 'Port-forward failed, retrying...'",
-      "    sudo pkill -f 'kubectl port-forward svc/flask-app-flask-app-chart'",
+      "    sudo pkill -f 'kubectl port-forward svc/flask-app'",
       "  fi",
       "  sleep 5",
       "done"

@@ -105,12 +105,80 @@ resource "null_resource" "install_kubectl_on_bastion" {
   }
 }
 
+resource "null_resource" "upload_jenkins_cluster_admin_roles" {
+  depends_on = [null_resource.install_kubectl_on_bastion]
+
+  provisioner "file" {
+    source      = "task3-k3s/jenkins-cluster-admin.yaml"
+    destination = "/home/ubuntu/jenkins-cluster-admin.yaml"
+
+   connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = var.bastion.public_ip
+      private_key = var.bastion_key.private_key_pem
+    }
+  }
+  
+  triggers = {
+    private_1_id = var.private_1.id
+  }
+}
+
+resource "null_resource" "apply_jenkins_cluster_admin_roles" {
+  depends_on = [null_resource.upload_jenkins_cluster_admin_roles]
+  provisioner "remote-exec" {
+    inline = [
+      "kubectl apply -f jenkins-cluster-admin.yaml",
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = var.bastion.public_ip
+      private_key = var.bastion_key.private_key_pem
+    }
+  }
+
+  triggers = {
+    instance_id = var.bastion.id
+  }
+}
+
+resource "null_resource" "install_docker_on_worker" {
+  depends_on = [null_resource.wait_for_private_2_ssh]
+  provisioner "remote-exec" {
+    inline = [
+        "curl -fsSL https://get.docker.com | sh",
+        "sudo usermod -aG docker $USER",
+        "sudo systemctl enable docker",
+        "sudo systemctl start docker"
+    ]
+
+    connection {
+      type                = "ssh"
+      user                = "ubuntu"
+      host                = var.private_2.private_ip
+      private_key         = var.k3s_key.private_key_pem
+      bastion_host        = var.bastion.public_ip
+      bastion_user        = "ubuntu"
+      bastion_private_key = var.bastion_key.private_key_pem
+    }
+  }
+
+  triggers = {
+    private_1_id = var.private_1.id
+    private_2_id = var.private_2.id
+  }
+}
+
+
 resource "null_resource" "install_worker_on_private_2" {
-  depends_on = [ null_resource.wait_for_private_2_ssh ]
+  depends_on = [ null_resource.install_docker_on_worker ]
 
   provisioner "remote-exec" {
     inline = [
-      "curl -sfL https://get.k3s.io | K3S_URL=https://${var.private_1.private_ip}:6443 K3S_TOKEN=${random_password.k3s_token.result} sh -"
+      "curl -sfL https://get.k3s.io | sh -s - agent --server https://${var.private_1.private_ip}:6443 --token ${random_password.k3s_token.result} --node-label jenkins-agent=worker"
     ]
 
     connection {
