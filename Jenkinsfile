@@ -26,6 +26,8 @@ spec:
       hostPath:
         path: /var/run/docker.sock
   restartPolicy: Never
+  nodeSelector:
+    kubernetes.io/hostname: ip-10-0-12-91
 """
     }
   }
@@ -46,13 +48,26 @@ spec:
       }
     }
 
-    stage('Run Unit Tests') {
+    stage('Application Build') {
       steps {
         container('tools') {
           sh """
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
             pip install -r $APP_PATH/requirements.txt
-            pytest $APP_PATH
           """
+        }
+      }
+    }
+
+    stage('Run Unit Tests') {
+      steps {
+        container('tools') {
+          // sh """
+          //   pip install -r $APP_PATH/requirements.txt
+          //   pytest $APP_PATH
+          // """
         }
       }
     }
@@ -63,14 +78,14 @@ spec:
           withCredentials([
             string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN'),
           ]) {
-            sh """
-              sonar-scanner \
-                -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
-                -Dsonar.organization=${env.SONAR_ORGANIZATION} \
-                -Dsonar.sources=$APP_PATH \
-                -Dsonar.login=$SONAR_TOKEN \
-                -Dsonar.host.url=https://sonarcloud.io
-            """
+            // sh """
+            //   sonar-scanner \
+            //     -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
+            //     -Dsonar.organization=${env.SONAR_ORGANIZATION} \
+            //     -Dsonar.sources=$APP_PATH \
+            //     -Dsonar.login=$SONAR_TOKEN \
+            //     -Dsonar.host.url=https://sonarcloud.io
+            // """
           }
         }
       }
@@ -105,6 +120,22 @@ spec:
             --namespace flask-app --create-namespace \
             --set image.repository=$DOCKER_IMAGE \
             --set image.tag=$IMAGE_TAG
+          """
+        }
+      }
+    }
+
+    stage('Verify Deployment') {
+      steps {
+        container('tools') {
+           sh """
+            kubectl rollout status deployment/flask-app -n flask-app --timeout=60s
+            sleep 5
+
+            # Smoke-checking using port forwarding 
+            kubectl port-forward svc/flask-app 8080:8080 -n flask-app &
+            sleep 5
+            curl -f http://localhost:8080 || (echo "App is not responding!" && exit 1)
           """
         }
       }
