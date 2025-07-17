@@ -118,7 +118,7 @@ helm install flask-app ./task5-application/flask-app-chart -n flask-app --create
 3. Forward port to your local machine. Make sure that port is not busy or select another port:
 
 ```
-kubectl port-forward svc/flask-app-flask-app-chart -n flask-app 8081:8080
+kubectl port-forward svc/flask-app -n flask-app 8081:8080
 ```
 
 4. Your application is available at the address `http://127.0.0.1:8081` (change port if you need)
@@ -138,7 +138,7 @@ kubectl port-forward svc/flask-app-flask-app-chart -n flask-app 8081:8080
 - Definition: select Pipeline script from SCM.
 - SCM select Git.
 - Repository URL: enter the URL of Git repository (ex: `https://github.com/Jimmba/rsschool-devops-course-tasks`).
-- Branch Specifier: specify `task_6` (or `main`)
+- Branch Specifier: specify `main`
 - Script Path: leave as Jenkinsfile (if it's in the root) or specify the path if it’s in a subfolder.
 
 4. Build/deploy jenkins agent
@@ -148,43 +148,37 @@ docker build -t <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest ./task6-pipeline
 docker push <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest
 ```
 
-Jenkins - Manage Jenkinks - Credentials - System - Global Credentials - Add `DockerHub` credentials:
+5. Add credentials to Jenkins
+   Jenkins - Manage Jenkinks - Credentials - System - Global Credentials:
+
+5.1 Add `DockerHub` credentials:
 
 - kind: username and password
 - username: YOUR DOCKERHUB NAME
 - password: YOUR DOCKERHUB TOKEN
-- id: docker-hub-credentials (this value should be used in jenkins configuration as `credentialsId` value)
+- id: `docker-hub-credentials` (this value should be used in jenkins configuration as `credentialsId` value)
+  press `create` button
 
-press `create` button
-
-<!-- Add `SonarQube` organization ID:
-
-- kind: username and password
-- username: YOUR SONARQUBE NAME
-- password: YOUR SONARQUBE TOKEN
-- id: sonar-org-id
-
-press `create` button -->
-
-Add `SonarQube` token:
+  5.2 Add `SonarQube` token:
 
 - kind: secret text
 - secret: YOUR SONARQUBE TOKEN
-- id: sonar-token
+- id: `sonar-token`
+  press `create` button
 
-press `create` button
+  5.3 Add `email` to secret:
 
-<!-- Add `SonarQube` project key:
+- kind: secret text
+- secret: YOUR EMAIL
+- id: `email-to`
 
-- kind: username and password
-- username: YOUR SONARQUBE NAME
-- password: YOUR SONARQUBE PROJECT KEY
-- id: sonar-project-key
+6. Configure email notification agent:
+   Go to `manage jenkins - system - email notification` and set:
+   SMTP server: `smtp.gmail.com`
+   set `use smtp authentification`
+   username: `YOUR_MAIL_LOGIN`
+   password: `YOUR_PASSWORD` ([application password](https://myaccount.google.com/apppasswords))
+   set `use ssl`
+   SMTP port: 465
 
-press `create` button -->
-
-5. Apply roles
-
-```
-kubectl apply -f task6-pipeline/jenkins-cluster-admin.yaml
-```
+7. Push new commit in `main` or run pipeline manually.

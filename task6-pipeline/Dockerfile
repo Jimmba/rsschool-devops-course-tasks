@@ -10,10 +10,13 @@ RUN apt-get update && \
       bash \
       git \
       docker.io \
-      python3 \
+      python3.10 \
+      python3.10-venv \
+      python3.10-distutils \
       python3-pip \
-      python3-venv \
       unzip && \
+      ln -sf /usr/bin/python3.10 /usr/bin/python3 && \
+      ln -sf /usr/bin/pip3 /usr/bin/pip && \
     # Helm
     curl -LO "https://get.helm.sh/helm-v3.14.3-linux-amd64.tar.gz" && \
     tar -zxvf helm-v3.14.3-linux-amd64.tar.gz && \

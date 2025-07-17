@@ -27,14 +27,13 @@ spec:
         path: /var/run/docker.sock
   restartPolicy: Never
   nodeSelector:
-    kubernetes.io/hostname: ip-10-0-12-91
+    jenkins-agent: worker
 """
     }
   }
 
   environment {
     DOCKER_IMAGE = 'jimmba/flask-app'
-    IMAGE_TAG = 'latest'
     APP_PATH = './task5-application/app'
     CHART_PATH = './task5-application/flask-app-chart'
     SONAR_PROJECT_KEY = 'Jimmba_rsschool-devops-course-tasks'
@@ -64,10 +63,10 @@ spec:
     stage('Run Unit Tests') {
       steps {
         container('tools') {
-          // sh """
-          //   pip install -r $APP_PATH/requirements.txt
-          //   pytest $APP_PATH
-          // """
+          sh """
+            pip install -r $APP_PATH/requirements.txt
+            pytest $APP_PATH
+          """
         }
       }
     }
@@ -78,14 +77,14 @@ spec:
           withCredentials([
             string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN'),
           ]) {
-            // sh """
-            //   sonar-scanner \
-            //     -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
-            //     -Dsonar.organization=${env.SONAR_ORGANIZATION} \
-            //     -Dsonar.sources=$APP_PATH \
-            //     -Dsonar.login=$SONAR_TOKEN \
-            //     -Dsonar.host.url=https://sonarcloud.io
-            // """
+            sh """
+              sonar-scanner \
+                -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
+                -Dsonar.organization=${env.SONAR_ORGANIZATION} \
+                -Dsonar.sources=$APP_PATH \
+                -Dsonar.login=$SONAR_TOKEN \
+                -Dsonar.host.url=https://sonarcloud.io
+            """
           }
         }
       }
@@ -94,7 +93,7 @@ spec:
     stage('Build Docker Image') {
       steps {
         container('tools') {
-          sh "docker build -t $DOCKER_IMAGE:$IMAGE_TAG $APP_PATH"
+          sh "docker build -t $DOCKER_IMAGE:latest $APP_PATH"
         }
       }
     }
@@ -105,7 +104,7 @@ spec:
           withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
             sh '''
               echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-              docker push $DOCKER_IMAGE:$IMAGE_TAG
+              docker push $DOCKER_IMAGE:latest
             '''
           }
         }
@@ -119,7 +118,7 @@ spec:
             helm upgrade --install flask-app $CHART_PATH \
             --namespace flask-app --create-namespace \
             --set image.repository=$DOCKER_IMAGE \
-            --set image.tag=$IMAGE_TAG
+            --set image.tag=latest
           """
         }
       }
@@ -141,21 +140,22 @@ spec:
       }
     }
   }
+  
 
   post {
     success {
-      emailext (
-        subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-        body: "The build was successful.\n\nПодробнее: ${env.BUILD_URL}",
-        to: "your-email@example.com"
-      )
+      withCredentials([string(credentialsId: 'email-to', variable: 'EMAIL_TO')]) {
+        mail to: EMAIL_TO,
+            subject: "Build successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: "Check the console output at ${env.BUILD_URL}"
+      }
     }
     failure {
-      emailext (
-        subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-        body: "The build failed.\n\nПодробнее: ${env.BUILD_URL}",
-        to: "your-email@example.com"
-      )
+      withCredentials([string(credentialsId: 'email-to', variable: 'EMAIL_TO')]) {
+        mail to: EMAIL_TO,
+            subject: "Build failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: "Check the console output at ${env.BUILD_URL}"
+      }
     }
   }
 }
