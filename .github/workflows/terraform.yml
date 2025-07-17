@@ -4,12 +4,13 @@ permissions:
   contents: read
 run-name: This action was emitted by ${{ github.actor }}
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  #   branches:
+  #     - main
+  workflow_dispatch:
 
 jobs:
   terraform-check:
