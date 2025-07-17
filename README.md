@@ -122,3 +122,69 @@ kubectl port-forward svc/flask-app-flask-app-chart -n flask-app 8081:8080
 ```
 
 4. Your application is available at the address `http://127.0.0.1:8081` (change port if you need)
+
+## Add pipeline to Jenkins
+
+1. Open jenkins in browser (how to install it and forward port read above)
+2. Create new item:
+
+- press `Create new item`
+- enter the name (ex. flask-app)
+- press `Pipeline`
+- press `OK` button
+
+3. Configure pipeline. Set:
+
+- Definition: select Pipeline script from SCM.
+- SCM select Git.
+- Repository URL: enter the URL of Git repository (ex: `https://github.com/Jimmba/rsschool-devops-course-tasks`).
+- Branch Specifier: specify `task_6` (or `main`)
+- Script Path: leave as Jenkinsfile (if it's in the root) or specify the path if it’s in a subfolder.
+
+4. Build/deploy jenkins agent
+
+```
+docker build -t <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest ./task6-pipeline
+docker push <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest
+```
+
+Jenkins - Manage Jenkinks - Credentials - System - Global Credentials - Add `DockerHub` credentials:
+
+- kind: username and password
+- username: YOUR DOCKERHUB NAME
+- password: YOUR DOCKERHUB TOKEN
+- id: docker-hub-credentials (this value should be used in jenkins configuration as `credentialsId` value)
+
+press `create` button
+
+<!-- Add `SonarQube` organization ID:
+
+- kind: username and password
+- username: YOUR SONARQUBE NAME
+- password: YOUR SONARQUBE TOKEN
+- id: sonar-org-id
+
+press `create` button -->
+
+Add `SonarQube` token:
+
+- kind: secret text
+- secret: YOUR SONARQUBE TOKEN
+- id: sonar-token
+
+press `create` button
+
+<!-- Add `SonarQube` project key:
+
+- kind: username and password
+- username: YOUR SONARQUBE NAME
+- password: YOUR SONARQUBE PROJECT KEY
+- id: sonar-project-key
+
+press `create` button -->
+
+5. Apply roles
+
+```
+kubectl apply -f task6-pipeline/jenkins-cluster-admin.yaml
+```

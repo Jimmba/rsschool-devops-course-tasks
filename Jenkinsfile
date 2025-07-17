@@ -144,10 +144,18 @@ spec:
 
   post {
     success {
-      echo "Deployment successful!"
+      emailext (
+        subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+        body: "The build was successful.\n\nПодробнее: ${env.BUILD_URL}",
+        to: "your-email@example.com"
+      )
     }
     failure {
-      echo "Deployment failed."
+      emailext (
+        subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+        body: "The build failed.\n\nПодробнее: ${env.BUILD_URL}",
+        to: "your-email@example.com"
+      )
     }
   }
 }
