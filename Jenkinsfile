@@ -147,14 +147,14 @@ spec:
       withCredentials([string(credentialsId: 'email-to', variable: 'EMAIL_TO')]) {
         mail to: EMAIL_TO,
             subject: "Build successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            body: "Check the console output at ${env.BUILD_URL}"
+            body: "Check the console output at http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/"
       }
     }
     failure {
       withCredentials([string(credentialsId: 'email-to', variable: 'EMAIL_TO')]) {
         mail to: EMAIL_TO,
             subject: "Build failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            body: "Check the console output at ${env.BUILD_URL}"
+            body: "Check the console output at http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/"
       }
     }
   }
