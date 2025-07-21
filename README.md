@@ -185,3 +185,39 @@ docker push <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest
 - Repository URL: enter the URL of Git repository (ex: `https://github.com/Jimmba/rsschool-devops-course-tasks`).
 - Branch Specifier: specify `main`
 - Script Path: leave as Jenkinsfile (if it's in the root) or specify the path if it’s in a subfolder.
+
+## Monitoring
+
+### Prometheus manual installation
+
+1. Add namespace
+
+```
+kubectl create namespace monitoring
+```
+
+2. Add bitnami (if not added earlier):
+
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+```
+
+3. Install Prometheus:
+
+```
+helm install prometheus bitnami/kube-prometheus \
+  -n monitoring -f task7-monitoring/prometheus.yaml
+```
+
+4. Check installation:
+
+```
+kubectl get all -n monitoring
+```
+
+5. Forward port:
+
+```
+kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090
+```
