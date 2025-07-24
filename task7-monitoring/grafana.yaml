@@ -19,3 +19,8 @@ datasources:
         access: proxy
         url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
         isDefault: true
+smtp:
+  enabled: true
+  host: "smtp4dev.monitoring.svc.cluster.local:25"
+  skipVerify: true
+  fromAddress: "grafana@example.com"
