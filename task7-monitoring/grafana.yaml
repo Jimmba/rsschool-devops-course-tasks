@@ -1,0 +1,21 @@
+admin:
+  user: admin
+  password: admin_password
+
+service:
+  type: NodePort
+  port: 3000
+  nodeport: 32001
+
+# persistence:
+#   enabled: true
+#   # existingClaim: grafana-pvc
+datasources:
+  secretDefinition:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+        isDefault: true

@@ -2,9 +2,17 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
-rule_files:
-  # - "first.rules"
-  # - "second.rules"
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+pushgateway:
+  enabled: false
+
+alertmanager:
+  enabled: false  # will enable later
 
 scrape_configs:
   - job_name: prometheus

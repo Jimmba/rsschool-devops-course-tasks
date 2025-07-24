@@ -188,7 +188,7 @@ docker push <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest
 
 ## Monitoring
 
-### Prometheus manual installation
+### Preparing:
 
 1. Add namespace
 
@@ -203,21 +203,58 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 ```
 
-3. Install Prometheus:
+### Prometheus manual installation
+
+1. Install Prometheus:
 
 ```
 helm install prometheus bitnami/kube-prometheus \
   -n monitoring -f task7-monitoring/prometheus.yaml
 ```
 
-4. Check installation:
+2. Check installation:
 
 ```
 kubectl get all -n monitoring
 ```
 
-5. Forward port:
+3. Forward port:
 
 ```
 kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090
 ```
+
+### Grafana manual installation
+
+1. Install Grafana:
+
+```
+helm repo add grafana https://grafana.github.io/helm-charts
+kubectl apply -f task7-monitoring/pv.yaml
+kubectl apply -f task7-monitoring/pvc.yaml
+helm install grafana bitnami/grafana \
+  -n monitoring -f task7-monitoring/grafana.yaml
+```
+
+2. Check installation:
+
+```
+kubectl get all -n monitoring
+```
+
+3. Forward port:
+
+```
+kubectl port-forward svc/grafana -n monitoring 3000:3000
+```
+
+4. Get password (if it isn't configured in the `task7-monitoring/grafana.yaml`):
+
+```
+echo "Password: $(kubectl get secret grafana-admin --namespace monitoring -o jsonpath="{.data.
+GF_SECURITY_ADMIN_PASSWORD}" | base64 -d)"
+```
+
+5. Open Grafana `http://localhost:3000` using credentials:
+   login: admin
+   password: [PASSWORD_YOU_GOT_ON_STEP_4]
