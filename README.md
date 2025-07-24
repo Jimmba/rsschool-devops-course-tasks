@@ -2,11 +2,18 @@
 
 ! notes: project works with eu-west-1 region and bucket `rs-devops-terrafrom-state`. If you want to change it, you should find and replace in all the project manually (because `backend` doesn't support variables - they are hardcoded)
 
-1. Clone repository and change branch to task_1. Check - your repository should be named `rsschool-devops-course-tasks`
-2. Install AWS CLI and terraform 1.12.0
-3. Update default values in `variables.tf`
+1. Clone repository. Check - your repository should be named `rsschool-devops-course-tasks`
+2. Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions) and [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+Windows installer [AWS CLI](https://awscli.amazonaws.com/AWSCLIV2.msi).
+Windows installer [Terraform](https://developer.hashicorp.com/terraform/install)
+Check installation:
+```
+aws --version
+terraform -version
+```
+3. Update default values in `variables.tf``
 4. Create s3 backet named `rs-devops-terrafrom-state` and user with necessary policies.
-5. Change data in `backend.tf`
+5. Change data in `backend.tf``
 6. Run `terraform init`, `terrafrom plan` and `terraform apply`.
 
 If you want to run Github Actions:
@@ -56,6 +63,10 @@ After `terraform apply` jenkins deploys on `private-1` ec2 instance. To get acce
 ### Jenkins using Minikube
 
 1. Install [Helm](https://helm.sh/docs/intro/install/)
+command for Windows:
+```
+winget install Helm.Helm
+```
 2. Install [Minikube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
 3. Start cluster `minikube start`.
 4. Add Jenkins to Helm repo
