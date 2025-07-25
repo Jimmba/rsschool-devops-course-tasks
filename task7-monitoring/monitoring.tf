@@ -49,7 +49,7 @@ resource "null_resource" "upload_monitoring_folder" {
 }
 
 
-resource "null_resource" "install_prometheus" {
+resource "null_resource" "install_monitoring" {
   depends_on = [null_resource.upload_monitoring_folder]
 
   provisioner "remote-exec" {
@@ -70,8 +70,11 @@ resource "null_resource" "install_prometheus" {
       "done",
 
       "echo 'Apply dashboard'",
-      "sudo kubectl apply -f monitoring/grafana-dashboard-provider.yaml",
-      "sudo kubectl create configmap grafana-dashboard -n monitoring --from-file=dashboard.json=/home/ubuntu/monitoring/dashboard.json",
+      # "sudo kubectl apply -f monitoring/grafana-dashboard-provider.yaml",
+      "sudo kubectl create configmap grafana-dashboard -n monitoring --from-file=dashboard.json=/home/ubuntu/monitoring/dashboard.json",  
+
+      "echo 'Add smtp4dev...'",
+      "sudo kubectl apply -f monitoring/smtp.yaml",
 
       "echo 'Install Grafana...'",
       "sudo helm install grafana bitnami/grafana -n monitoring --create-namespace -f monitoring/grafana.yaml --kubeconfig /home/ubuntu/config",

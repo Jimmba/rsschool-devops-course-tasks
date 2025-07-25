@@ -203,6 +203,12 @@ docker push <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest
 
 ## Monitoring
 
+To deploy in AWS use terraform. Instructions to deploy manually on the minikube below.
+Alerts are saved in `task7-monitoring/alerts.yaml`
+Dashboard is saved in `task7-monitoring/dashboard.json`
+You don't have to configure contact point - existing default contact point is reconfigured
+If you want to use another smtp server - use comment lines in `task7-monitoring`
+
 ### Preparing:
 
 1. Add namespace
@@ -237,6 +243,18 @@ kubectl get all -n monitoring
 
 ```
 kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090
+```
+
+### Apply smtp settings
+
+```
+kubectl apply -f task7-monitoring/smtp.yaml
+```
+
+### Apply configmap
+
+```
+kubectl create configmap grafana-dashboard -n monitoring --from-file=dashboard.json=/home/ubuntu/monitoring/dashboard.json
 ```
 
 ### Grafana manual installation
