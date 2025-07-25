@@ -27,6 +27,28 @@ controller:
                   shell('echo Hello world')
                 }
               }
+      git-pipeline-job: |
+        jobs:
+          - script: >
+              pipelineJob('flask-app') {
+                description('Pipeline for RS School DevOps course')
+                definition {
+                  cpsScm {
+                    scm {
+                      git {
+                        remote {
+                          url('https://github.com/Jimmba/rsschool-devops-course-tasks')
+                        }
+                        branches('*/main')
+                        scriptPath('Jenkinsfile')
+                      }
+                    }
+                  }
+                }
+                triggers {
+                  githubPush()
+                }
+              }
       security: |
         jenkins:
           securityRealm:

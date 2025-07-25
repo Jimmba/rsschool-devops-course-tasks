@@ -129,7 +129,70 @@ helm install flask-app ./task5-application/flask-app-chart -n flask-app --create
 3. Forward port to your local machine. Make sure that port is not busy or select another port:
 
 ```
-kubectl port-forward svc/flask-app-flask-app-chart -n flask-app 8081:8080
+kubectl port-forward svc/flask-app -n flask-app 8081:8080
 ```
 
 4. Your application is available at the address `http://127.0.0.1:8081` (change port if you need)
+
+## Pipeline
+
+1. Open jenkins in browser (read above how to install it and forward port)
+
+2. Add credentials to Jenkins
+   Jenkins - Manage Jenkinks - Credentials - System - Global Credentials:
+
+2.1 Add `DockerHub` credentials:
+
+- kind: username and password
+- username: YOUR DOCKERHUB NAME
+- password: YOUR DOCKERHUB TOKEN
+- id: `docker-hub-credentials` (this value should be used in jenkins configuration as `credentialsId` value)
+  press `create` button
+
+  2.2 Add `SonarQube` token:
+
+- kind: secret text
+- secret: YOUR SONARQUBE TOKEN
+- id: `sonar-token`
+  press `create` button
+
+  2.3 Add `email` to secret:
+
+- kind: secret text
+- secret: YOUR EMAIL
+- id: `email-to`
+
+3. Configure email notification agent:
+   Go to `manage jenkins - system - email notification` and set:
+   SMTP server: `smtp.gmail.com`
+   set `use smtp authentification`
+   username: `YOUR_MAIL_LOGIN`
+   password: `YOUR_PASSWORD` ([application password](https://myaccount.google.com/apppasswords))
+   set `use ssl`
+   SMTP port: 465
+
+4. Push new commit in `main` or run pipeline manually.
+
+## Configure pipeline manually (not needed. Only for information)
+
+1. Build/deploy jenkins agent and update image name in Jenkinsfile - it is used during the pipeline
+
+```
+docker build -t <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest ./task6-pipeline
+docker push <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest
+```
+
+2. Create new pipeline:
+
+- press `Create new item`
+- enter the name (ex. flask-app)
+- press `Pipeline`
+- press `OK` button
+
+3. Configure pipeline. Set:
+
+- Definition: select Pipeline script from SCM.
+- SCM select Git.
+- Repository URL: enter the URL of Git repository (ex: `https://github.com/Jimmba/rsschool-devops-course-tasks`).
+- Branch Specifier: specify `main`
+- Script Path: leave as Jenkinsfile (if it's in the root) or specify the path if it’s in a subfolder.

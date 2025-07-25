@@ -5,3 +5,5 @@ terraform.tfstate.backup
 terraform.tfvars
 backups/
 keys/
+
+.env
