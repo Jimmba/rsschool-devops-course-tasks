@@ -69,6 +69,10 @@ resource "null_resource" "install_prometheus" {
       "  sleep 10",
       "done",
 
+      "echo 'Apply dashboard'",
+      "sudo kubectl apply -f monitoring/grafana-dashboard-provider.yaml",
+      "sudo kubectl create configmap grafana-dashboard -n monitoring --from-file=dashboard.json=/home/ubuntu/monitoring/dashboard.json",
+
       "echo 'Install Grafana...'",
       "sudo helm install grafana bitnami/grafana -n monitoring --create-namespace -f monitoring/grafana.yaml --kubeconfig /home/ubuntu/config",
 

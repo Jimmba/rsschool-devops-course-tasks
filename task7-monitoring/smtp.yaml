@@ -18,7 +18,7 @@ spec:
           image: rnwood/smtp4dev
           ports:
             - containerPort: 25
-            - containerPort: 5000  # 👈 обязательно
+            - containerPort: 5000
 ---
 apiVersion: v1
 kind: Service
@@ -36,4 +36,4 @@ spec:
     - name: http
       port: 5000
       targetPort: 5000
-      nodePort: 30500   # 👈 жёстко указываем NodePort
+      nodePort: 30500

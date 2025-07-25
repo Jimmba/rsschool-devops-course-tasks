@@ -4,13 +4,15 @@
 
 1. Clone repository. Check - your repository should be named `rsschool-devops-course-tasks`
 2. Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions) and [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-Windows installer [AWS CLI](https://awscli.amazonaws.com/AWSCLIV2.msi).
-Windows installer [Terraform](https://developer.hashicorp.com/terraform/install)
-Check installation:
+   Windows installer [AWS CLI](https://awscli.amazonaws.com/AWSCLIV2.msi).
+   Windows installer [Terraform](https://developer.hashicorp.com/terraform/install)
+   Check installation:
+
 ```
 aws --version
 terraform -version
 ```
+
 3. Update default values in `variables.tf``
 4. Create s3 backet named `rs-devops-terrafrom-state` and user with necessary policies.
 5. Change data in `backend.tf``
@@ -63,10 +65,12 @@ After `terraform apply` jenkins deploys on `private-1` ec2 instance. To get acce
 ### Jenkins using Minikube
 
 1. Install [Helm](https://helm.sh/docs/intro/install/)
-command for Windows:
+   command for Windows:
+
 ```
 winget install Helm.Helm
 ```
+
 2. Install [Minikube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
 3. Start cluster `minikube start`.
 4. Add Jenkins to Helm repo
@@ -240,9 +244,6 @@ kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 909
 1. Install Grafana:
 
 ```
-helm repo add grafana https://grafana.github.io/helm-charts
-kubectl apply -f task7-monitoring/pv.yaml
-kubectl apply -f task7-monitoring/pvc.yaml
 helm install grafana bitnami/grafana \
   -n monitoring -f task7-monitoring/grafana.yaml
 ```
