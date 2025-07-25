@@ -4,13 +4,15 @@
 
 1. Clone repository. Check - your repository should be named `rsschool-devops-course-tasks`
 2. Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions) and [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-Windows installer [AWS CLI](https://awscli.amazonaws.com/AWSCLIV2.msi).
-Windows installer [Terraform](https://developer.hashicorp.com/terraform/install)
-Check installation:
+   Windows installer [AWS CLI](https://awscli.amazonaws.com/AWSCLIV2.msi).
+   Windows installer [Terraform](https://developer.hashicorp.com/terraform/install)
+   Check installation:
+
 ```
 aws --version
 terraform -version
 ```
+
 3. Update default values in `variables.tf``
 4. Create s3 backet named `rs-devops-terrafrom-state` and user with necessary policies.
 5. Change data in `backend.tf``
@@ -63,10 +65,12 @@ After `terraform apply` jenkins deploys on `private-1` ec2 instance. To get acce
 ### Jenkins using Minikube
 
 1. Install [Helm](https://helm.sh/docs/intro/install/)
-command for Windows:
+   command for Windows:
+
 ```
 winget install Helm.Helm
 ```
+
 2. Install [Minikube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
 3. Start cluster `minikube start`.
 4. Add Jenkins to Helm repo
@@ -196,3 +200,91 @@ docker push <YOUR_DOCKERHUB_NAME>/jenkins-agent:latest
 - Repository URL: enter the URL of Git repository (ex: `https://github.com/Jimmba/rsschool-devops-course-tasks`).
 - Branch Specifier: specify `main`
 - Script Path: leave as Jenkinsfile (if it's in the root) or specify the path if it’s in a subfolder.
+
+## Monitoring
+
+To deploy in AWS use terraform. Instructions to deploy manually on the minikube below.
+Alerts are saved in `task7-monitoring/alerts.yaml`
+Dashboard is saved in `task7-monitoring/dashboard.json`
+You don't have to configure contact point - existing default contact point is reconfigured
+If you want to use another smtp server - use comment lines in `task7-monitoring`
+
+### Preparing:
+
+1. Add namespace
+
+```
+kubectl create namespace monitoring
+```
+
+2. Add bitnami (if not added earlier):
+
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+```
+
+### Prometheus manual installation
+
+1. Install Prometheus:
+
+```
+helm install prometheus bitnami/kube-prometheus \
+  -n monitoring -f task7-monitoring/prometheus.yaml
+```
+
+2. Check installation:
+
+```
+kubectl get all -n monitoring
+```
+
+3. Forward port:
+
+```
+kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090
+```
+
+### Apply smtp settings
+
+```
+kubectl apply -f task7-monitoring/smtp.yaml
+```
+
+### Apply configmap
+
+```
+kubectl create configmap grafana-dashboard -n monitoring --from-file=dashboard.json=/home/ubuntu/monitoring/dashboard.json
+```
+
+### Grafana manual installation
+
+1. Install Grafana:
+
+```
+helm install grafana bitnami/grafana \
+  -n monitoring -f task7-monitoring/grafana.yaml
+```
+
+2. Check installation:
+
+```
+kubectl get all -n monitoring
+```
+
+3. Forward port:
+
+```
+kubectl port-forward svc/grafana -n monitoring 3000:3000
+```
+
+4. Get password (if it isn't configured in the `task7-monitoring/grafana.yaml`):
+
+```
+echo "Password: $(kubectl get secret grafana-admin --namespace monitoring -o jsonpath="{.data.
+GF_SECURITY_ADMIN_PASSWORD}" | base64 -d)"
+```
+
+5. Open Grafana `http://localhost:3000` using credentials:
+   login: admin
+   password: [PASSWORD_YOU_GOT_ON_STEP_4]

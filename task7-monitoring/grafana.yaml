@@ -1,0 +1,37 @@
+admin:
+  user: admin
+  password: admin_password
+
+service:
+  type: NodePort
+  port: 3000
+  nodePort: 32001
+
+datasources:
+  secretDefinition:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+        isDefault: true
+
+dashboardsProvider:
+  enabled: true
+dashboardsConfigMaps:
+  - configMapName: grafana-dashboard
+smtp:
+  enabled: true
+  host: "smtp4dev.monitoring.svc.cluster.local:25"
+  skipVerify: true
+  fromAddress: "grafana@example.com"
+# extraConfiguration:
+#   smtp:
+#     enabled: true
+#     host: "email-smtp.eu-west-1.amazonaws.com:587"
+#     user: "AKIAUKITLMYAEM45J2NU"
+#     password: "BHys/Bw3QIAhOTeqT9mpfeaHs72BzUd7zefUX7Jc5YmS" // don't worry, it is not active already
+#     fromAddress: "gimvitpl@gmail.com"
+#     fromName: "Grafana Alerts"
+#     skipVerify: true
